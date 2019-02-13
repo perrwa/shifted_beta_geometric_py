@@ -13,7 +13,7 @@ import numpy as np
 from scipy.optimize import minimize
 from scipy.special import hyp2f1
 
-__author__ = 'JD Maturen'
+__author__ = 'JD Maturen, Perry Wang'
 
 
 def generate_probabilities(alpha, beta, x):
@@ -29,7 +29,7 @@ def probability(alpha, beta, t):
     """Probability function P"""
     if t == 0:
         return alpha / (alpha + beta)
-    return (beta + t - 1) / (alpha + beta + t) * probability(alpha, beta, t-1)
+    return (beta + t - 1) / (alpha + beta + t) * probability(alpha, beta, t - 1)
 
 
 def survivor(probabilities, t):
@@ -62,7 +62,7 @@ def log_likelihood_multi_cohort(alpha, beta, data):
     cohorts = len(data)
     total = 0
     for i, cohort in enumerate(data):
-        total += sum([(cohort[j]-cohort[j+1])*log(probabilities[j]) for j in range(len(cohort)-1)])
+        total += sum([(cohort[j] - cohort[j + 1]) * log(probabilities[j]) for j in range(len(cohort) - 1)])
         total += cohort[-1] * log(survivor(probabilities, cohorts - i - 1))
     return total
 
@@ -73,20 +73,24 @@ def survivor_rates(data):
         if i == 0:
             s.append(1 - data[0])
         else:
-            s.append(data[i-1] - data[i])
+            s.append(data[i - 1] - data[i])
     return s
 
 
 def maximize(data):
     survivors = survivor_rates(data)
-    func = lambda x: -log_likelihood(x[0], x[1], data, survivors)
+
+    def func(x):
+        return -log_likelihood(x[0], x[1], data, survivors)
+
     x0 = np.array([100., 100.])
     res = minimize(func, x0, method='nelder-mead', options={'xtol': 1e-8})
     return res
 
 
 def maximize_multi_cohort(data):
-    func = lambda x: -log_likelihood_multi_cohort(x[0], x[1], data)
+    def func(x):
+        return -log_likelihood_multi_cohort(x[0], x[1], data)
     x0 = np.array([1., 1.])
     res = minimize(func, x0, method='nelder-mead', options={'xtol': 1e-8})
     return res
@@ -102,7 +106,7 @@ def predicted_survival(alpha, beta, x):
     Function 1 in the paper"""
     s = [predicted_retention(alpha, beta, 0)]
     for t in range(1, x):
-        s.append(predicted_retention(alpha, beta, t) * s[t-1])
+        s.append(predicted_retention(alpha, beta, t) * s[t - 1])
     return s
 
 
