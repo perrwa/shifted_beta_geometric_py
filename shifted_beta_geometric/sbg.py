@@ -134,23 +134,23 @@ def test():
     """Test against the High End subscription retention data from the paper"""
     example_data = [.869, .743, .653, .593, .551, .517, .491]
     ll11 = log_likelihood(1., 1., example_data)
-    print (np.allclose(ll11, -2.115, 1e-3))
+    print(np.allclose(ll11, -2.115, 1e-3))
 
     res = maximize(example_data)
     alpha, beta = res.x
-    print (res.status == 0 and np.allclose(alpha, 0.668, 1e-3) and np.allclose(beta, 3.806, 1e-3))
-    print ()
+    print(res.status == 0 and np.allclose(alpha, 0.668, 1e-3) and np.allclose(beta, 3.806, 1e-3))
+    print()
 
-    print ("real\t", list(map(lambda x: "{0:.1f}%".format(x*100), example_data)))
-    print ("pred\t", list(map(lambda x: "{0:.1f}%".format(x*100), predicted_survival(alpha, beta, 12))))
-    print ()
+    print("real\t", ["{0:.1f}%".format(x*100) for x in example_data])
+    print("pred\t", ["{0:.1f}%".format(x*100) for x in predicted_survival(alpha, beta, 12)])
+    print()
 
-    print (list(map("{0:f}".format, [derl(alpha, beta, 0.1, x) for x in range(12)])))
-    print ()
+    print(list(map("{0:f}".format, [derl(alpha, beta, 0.1, x) for x in range(12)])))
+    print()
 
     multi_cohort_data = [[10000, 8000, 6480, 5307, 4391], [10000, 8000, 6480, 5307], [10000, 8000, 6480], [10000, 8000]]
     alpha, beta = fit_multi_cohort(multi_cohort_data)
-    print (np.allclose(alpha, 3.80, 1e-2) and np.allclose(beta, 15.19, 1e-2))
+    print(np.allclose(alpha, 3.80, 1e-2) and np.allclose(beta, 15.19, 1e-2))
 
 
 if __name__ == '__main__':
