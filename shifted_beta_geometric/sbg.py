@@ -36,7 +36,6 @@ def survivor(probabilities, t):
     """Survivor function S"""
     s = 1 - probabilities[0]
     for x in range(1, t + 1):
-    for x in range(1, t + 1):
         s = s - probabilities[x]
     return s
 
